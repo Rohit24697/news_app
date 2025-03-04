@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/controller/category_controller.dart';
+import 'package:news_app/reading_history_page.dart';
 import 'package:news_app/services/news_service.dart';
 import 'package:news_app/widgets/news_card.dart';
 import 'package:news_app/widgets/news_cards.dart';
@@ -99,7 +100,9 @@ class NewsGetxPage extends GetView<CategoryController> {
                         ? Colors.white
                         : Colors.black),
               ),
-              onTap: () {},
+              onTap: () {
+                Get.to(ReadingHistoryPage());
+              },
             ),
             Divider(color: themeController.isDarkMode.value ? Colors.white54 : Colors.black54), // Adjust divider color
             ListTile(

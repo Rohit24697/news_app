@@ -5,8 +5,8 @@ import '../model/news_model.dart';
 
 class NewsService {
   static const String _baseUrl = "https://gnews.io/api/v4";
-  static const String _apiKey = "cbf1a64f1694052111d29e204b816486";
-  // static const String _apiKey = "d6544ae78cc1a085044c328cbcb5721a"; // Replace with your key
+  // static const String _apiKey = "cbf1a64f1694052111d29e204b816486";
+  static const String _apiKey = "d6544ae78cc1a085044c328cbcb5721a"; // Replace with your key
 
   // Fetch news by category
   static Future<List<NewsModel>> fetchNews(String category) async {

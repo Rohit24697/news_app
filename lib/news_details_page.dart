@@ -16,7 +16,7 @@ class NewsDetailPage extends GetView<ThemeController> {
   Widget build(BuildContext context) {
     final NewsModel news = Get.arguments as NewsModel; // Cast to NewsModel
 
-    _saveNewsToDatabase(news);
+    _checkDuplicateNewsToDatabase(news);
     // Function to open the news URL in the browser
     void _launchURL(String url) async {
       try {
@@ -31,29 +31,31 @@ class NewsDetailPage extends GetView<ThemeController> {
         }
       } catch (e) {
         debugPrint("Error launching URL: $e");
-        Get.snackbar("Error", "Invalid URL", snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+            "Error", "Invalid URL", snackPosition: SnackPosition.BOTTOM);
       }
     }
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Obx(() => AppBar(
-          backgroundColor:
-          themeController.isDarkMode.value ? Colors.black : Colors.blue,
-          iconTheme: IconThemeData(
-            color: Colors.white, // Change back button color to white
-          ),
-          title: Text(news.source, style: TextStyle(color: Colors.white),),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.share, color: Colors.white,),
-              onPressed: () {
-                Share.share("${news.title} - Read more at ${news.url}");
-              },
-            ),
-          ],
-        )),
+        child: Obx(() =>
+            AppBar(
+              backgroundColor:
+              themeController.isDarkMode.value ? Colors.black : Colors.blue,
+              iconTheme: IconThemeData(
+                color: Colors.white, // Change back button color to white
+              ),
+              title: Text(news.source, style: TextStyle(color: Colors.white),),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.share, color: Colors.white,),
+                  onPressed: () {
+                    Share.share("${news.title} - Read more at ${news.url}");
+                  },
+                ),
+              ],
+            )),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -84,8 +86,9 @@ class NewsDetailPage extends GetView<ThemeController> {
                 ),
                 Spacer(),
                 TextButton(
-                  onPressed: ()=> _launchURL(news.url),
-                  child: Text("Read More", style: TextStyle(fontSize: 16, color: Colors.blue)),
+                  onPressed: () => _launchURL(news.url),
+                  child: Text("Read More",
+                      style: TextStyle(fontSize: 16, color: Colors.blue)),
                 ),
               ],
             ),
@@ -114,9 +117,43 @@ class NewsDetailPage extends GetView<ThemeController> {
   }
 
 
+  // void _checkDuplicateNewsToDatabase(NewsModel news) async {
+  //   final history = await _dbHelper.getSavedNews();
+  //      bool isContain = history.any((news) =>
+  //   news.title == history.title && news.description == newNews.description);
+  //
+  //   if(!isContain){
+  //     _saveNewsToDatabase(news);
+  //     print("News saved to database: ${news.title}");
+  //   }
+  //
+  // }
+  void _checkDuplicateNewsToDatabase(NewsModel newNews) async {
+    final List<NewsModel> history = await _dbHelper.getSavedNews();
+
+    // Check if the same news already exists
+    bool isContain = history.any((news) =>
+    news.title == newNews.title &&
+        news.description == newNews.description &&
+        news.url == newNews.url &&
+        news.imageUrl == newNews.imageUrl &&
+        news.source == newNews.source &&
+        news.publishedAt == newNews.publishedAt &&
+        news.content == newNews.content);
+
+
+    if (!isContain) {
+      _saveNewsToDatabase(newNews);
+      print("News saved to database: ${newNews.title}");
+    } else {
+      print("Duplicate news entry: ${newNews.title}");
+    }
+  }
+
+
 // Save the news to the database
-void _saveNewsToDatabase(NewsModel news) async {
-  await _dbHelper.insertNews(news);
-  print("News saved to database: ${news.title}");
-}
+  void _saveNewsToDatabase(NewsModel news) async {
+    await _dbHelper.insertNews(news);
+    print("News saved to database: ${news.title}");
+  }
 }

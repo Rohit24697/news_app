@@ -1,8 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:news_app/widgets/news_card.dart';
 
 import 'model/news_model.dart';
+import 'news_details_page.dart';
 import 'services/database_service.dart';
 
 class ReadingHistoryPage extends StatefulWidget {
@@ -34,6 +35,20 @@ class _ReadingHistoryPageState extends State<ReadingHistoryPage> {
     });
   }
 
+  void _deleteNewsFromDatabase(NewsModel news) async {
+    await _dbHelper.clearOneHistory(news);
+
+    setState(() {
+      _history.remove(news); // Remove the deleted item from the list
+      getSavedList();
+    });
+    print("News saved to database: ${news.title}");
+  }
+
+  getSavedList() async {
+    return _history = await _dbHelper.getSavedNews();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +70,8 @@ class _ReadingHistoryPageState extends State<ReadingHistoryPage> {
 
           return GestureDetector(
             onTap: () {
-              Get.toNamed('/newsDetail', arguments: news);
+              // Get.toNamed('/newsDetail', arguments: news);
+              Get.to(() => NewsDetailPage(), arguments: news);
             },
             child: Card(
               margin: EdgeInsets.all(10),
@@ -65,6 +81,15 @@ class _ReadingHistoryPageState extends State<ReadingHistoryPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  InkWell(
+                    onTap: (){
+                      _deleteNewsFromDatabase(news);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8), // Optional padding for better tap area
+                      child: Icon(Icons.dangerous, color: Colors.red, size: 30),
+                    ),
+                  ),
                   // News Image
                   news.imageUrl.isNotEmpty
                       ? ClipRRect(

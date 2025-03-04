@@ -2,13 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../model/database_service.dart';
 import '../model/news_model.dart';
 import '../news_details_page.dart';
 
 class NewsCard extends StatelessWidget {
   final NewsModel news;
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  const NewsCard({required this.news});
+   NewsCard({required this.news});
+
 
   @override
   Widget build(BuildContext context) {

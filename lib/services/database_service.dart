@@ -59,4 +59,14 @@ class DatabaseHelper {
     final db = await database;
     await db.delete(tableName);
   }
+
+  Future<void> clearOneHistory(NewsModel news) async {
+    final db = await database;
+    await db.delete(
+      tableName,
+      where: "title = ? AND description = ?", // Match specific news entry
+      whereArgs: [news.title, news.description], // Bind values to avoid SQL injection
+    );
+  }
+
 }
